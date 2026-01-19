@@ -3,12 +3,27 @@ from datetime import date, timedelta
 FILE_NAME = "tips.txt"
 
 def get_date():
-    user_input = input("Enter a date (YYYY-MM-DD) or press ENTER for today: ")
+    while True:
+        user_input = input("Enter a date (YYYY-MM-DD) or press ENTER for today: ")
 
-    if user_input.strip() == "":
-        return date.today().isoformat()
-    else:
-        return user_input
+        if user_input.strip() == "":
+            return date.today()
+        
+        if user_input.lower() == 'q':
+            return None
+        
+        try:
+            date_input = date.fromisoformat(user_input)
+        except ValueError:
+            print("invalid date format.")
+            continue
+
+        if date_input > date.today():
+            print("Date can not be in the future.")
+            continue
+
+        return date_input
+    
 
 def add_tips():
     while True:
@@ -24,21 +39,11 @@ def add_tips():
             break
         except ValueError:
             print("Enter a number, please!")
-    
-    while True:
-        date_input = input("Enter a date or 'q' to exit: ")
-        if date_input.lower() == "q":
-            return None
-        try:
-            tip_date = date.fromisoformat(date_input)
-        except ValueError:
-            print("Invalid date format.")
-            continue
 
-        if tip_date > date.today():
-            print("Date can not be in the future.")
-            continue
-        break
+    tip_date = get_date()
+    if tip_date is None:
+        return
+    
 
     with open(FILE_NAME, "a", encoding="utf-8") as file:
         file.write(f"{tip_date} {amount}\n")
@@ -280,7 +285,7 @@ def sorted_day_by_tips():
 
 
 fun_comments = {
-    50: "Dobre ze jsi jedl vcera",
+    50: "Dobre ze jsi jedl vcera! Doufam",
     100: "Dneska jen rohlík 😅",
     300: "Dneska na nakup do zabky!",
     500: "Taxi domu zní reálně 🚕",
